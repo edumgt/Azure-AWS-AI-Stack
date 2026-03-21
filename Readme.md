@@ -1,3 +1,7 @@
+🌐 **언어 / Language:** [한국어](./Readme.md) | [English](./README_en.md) | [日本語](./README_ja.md) | [中文](./README_zh.md)
+
+---
+
 # AWS AI IaaS 기반 통합 AI 솔루션 제안서(브로셔)
 **Lex · Rekognition · Textract · Bedrock · Kendra · Lambda 기반**  
 **OCR/문서자동화 · PDF 출력물 · QRCode · 고객사별 AI Agent 제작**
