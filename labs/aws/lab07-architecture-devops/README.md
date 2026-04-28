@@ -89,3 +89,90 @@ Lex(인텐트/슬롯) → Fulfillment Lambda → 내부 API(ERP/CRM/그룹웨어
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
 - [AWS Architecture Center](https://aws.amazon.com/architecture/)
 - [제안서 PDF 열기](../../../docs/assets/AWS_AI_Solution_Company_Brochure_ko.pdf)
+
+---
+
+## ☁️ AWS ↔ Azure 전체 기술 스택 비교
+
+> AWS와 Azure의 인프라·AI 서비스 전체를 카테고리별로 비교합니다.  
+> Azure Lab 참조: [Azure Lab 05 — 인프라/DevOps](../../azure/lab05-infra-devops/README.md) | [Azure Lab 06 — 아키텍처/성능](../../azure/lab06-architecture-performance/README.md)
+
+### 카테고리별 서비스 대응표
+
+| 카테고리 | AWS 서비스 | Azure 대응 서비스 |
+|---------|-----------|-----------------|
+| **네트워킹** | VPC, Subnet, Security Group | VNet, Subnet, NSG |
+| **프라이빗 연결** | VPC Endpoints, PrivateLink | Private Endpoint, Private Link |
+| **하이브리드 연결** | AWS Direct Connect | Azure ExpressRoute |
+| **VPN** | AWS VPN Gateway | Azure VPN Gateway |
+| **NAT** | NAT Gateway | NAT Gateway |
+| **네트워크 간 연결** | VPC Peering, Transit Gateway | VNet Peering, Virtual WAN |
+| **WAF/DDoS** | AWS WAF, AWS Shield | Azure WAF, Azure DDoS Protection |
+| **서버리스 컴퓨팅** | AWS Lambda | Azure Functions |
+| **컨테이너 오케스트레이션** | Amazon EKS | Azure Kubernetes Service (AKS) |
+| **서버리스 컨테이너** | AWS Fargate, App Runner | Azure Container Apps |
+| **컨테이너 레지스트리** | Amazon ECR | Azure Container Registry (ACR) |
+| **VM** | Amazon EC2 | Azure Virtual Machine |
+| **PaaS 앱 호스팅** | AWS Elastic Beanstalk | Azure App Service |
+| **오브젝트 스토리지** | Amazon S3 | Azure Blob Storage |
+| **파일 스토리지** | Amazon EFS | Azure Files |
+| **인메모리 캐시** | Amazon ElastiCache (Redis) | Azure Cache for Redis |
+| **NoSQL DB** | Amazon DynamoDB | Azure Cosmos DB |
+| **관계형 DB** | Amazon RDS | Azure SQL Database / Azure Database for PostgreSQL |
+| **검색 엔진** | Amazon OpenSearch / Kendra | Azure AI Search (Cognitive Search) |
+| **메시지 큐** | Amazon SQS | Azure Service Bus / Storage Queue |
+| **메시지 브로커** | Amazon SNS | Azure Event Grid / Service Bus |
+| **이벤트 스트리밍** | Amazon Kinesis | Azure Event Hubs |
+| **워크플로우 오케스트레이션** | AWS Step Functions | Azure Durable Functions / Logic Apps |
+| **인증/인가** | AWS IAM, Amazon Cognito | Azure AD (Entra ID), RBAC |
+| **비밀 관리** | AWS Secrets Manager | Azure Key Vault |
+| **감사 로그** | AWS CloudTrail | Azure Activity Log / Monitor |
+| **모니터링/메트릭** | Amazon CloudWatch | Azure Monitor + Log Analytics |
+| **분산 추적** | AWS X-Ray | Azure Application Insights |
+| **IaC** | CloudFormation, CDK, Terraform | ARM/Bicep, Terraform |
+| **CI/CD** | CodeBuild, CodePipeline | Azure DevOps, GitHub Actions |
+| **대화형 AI** | Amazon Lex | Azure AI Language (CLU) + Bot Service |
+| **비전 AI** | Amazon Rekognition | Azure AI Vision + Face |
+| **문서 AI/OCR** | Amazon Textract | Azure AI Document Intelligence |
+| **음성 인식** | Amazon Transcribe | Azure AI Speech (STT) |
+| **음성 합성** | Amazon Polly | Azure AI Speech (TTS) |
+| **LLM/생성형 AI** | Amazon Bedrock | Azure OpenAI Service |
+| **AI Agent** | Bedrock Agents | Azure AI Agent Service (AI Foundry) |
+| **ML 플랫폼** | Amazon SageMaker | Azure Machine Learning |
+| **데이터 파이프라인** | AWS Glue, Athena | Azure Data Factory, Synapse Analytics |
+| **CDN** | Amazon CloudFront | Azure CDN / Azure Front Door |
+| **DNS** | Amazon Route 53 | Azure DNS |
+| **글로벌 로드밸런싱** | AWS Global Accelerator | Azure Front Door |
+
+### Well-Architected Framework 비교
+
+| 축 | AWS | Azure |
+|----|-----|-------|
+| 운영 우수성 | Operational Excellence Pillar | Operational Excellence |
+| 보안 | Security Pillar | Security |
+| 안정성 | Reliability Pillar | Reliability |
+| 성능 효율성 | Performance Efficiency Pillar | Performance Efficiency |
+| 비용 최적화 | Cost Optimization Pillar | Cost Optimization |
+| 지속 가능성 | Sustainability Pillar | Sustainability |
+
+> AWS Well-Architected Framework ↔ Azure Well-Architected Framework — 6개 축이 동일하게 대응
+
+### DevOps 파이프라인 비교
+
+**AWS CI/CD**
+```
+GitHub → CodeBuild(빌드/테스트) → CodePipeline → ECR(이미지) → EKS/Lambda(배포)
+```
+
+**Azure CI/CD**
+```
+GitHub → Azure DevOps / GitHub Actions(빌드/테스트) → ACR(이미지) → AKS/Functions(배포)
+```
+
+### 병렬 학습 포인트
+
+1. **네트워킹 기반**: VPC+Security Group ↔ VNet+NSG — 네트워크 격리 설계 원칙 동일 (Azure Lab 01 병행)
+2. **컨테이너 오케스트레이션**: EKS ↔ AKS — Kubernetes 기반 동일, 관리형 Control Plane 차이 (Azure Lab 02 병행)
+3. **보안 기반**: IAM+Cognito ↔ Azure AD+RBAC — 인증/인가 체계 비교 (Azure Lab 03 병행)
+4. **IaC**: CloudFormation/CDK ↔ ARM/Bicep — 선언형 인프라 코드 비교 (Azure Lab 05 병행)
+5. **Well-Architected**: AWS WAF ↔ Azure WAF — 6개 설계 축을 동일 기준으로 적용 (Azure Lab 06 병행)

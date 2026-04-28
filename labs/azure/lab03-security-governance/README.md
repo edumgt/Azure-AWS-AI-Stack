@@ -204,3 +204,101 @@ Management Group
 - [Azure RBAC](https://learn.microsoft.com/en-us/azure/role-based-access-control/)
 - [Azure Policy](https://learn.microsoft.com/en-us/azure/governance/policy/)
 - [Azure Compliance](https://learn.microsoft.com/en-us/azure/compliance/)
+
+---
+
+## ☁️ AWS 대응 서비스 비교
+
+> 이 Lab의 Azure 보안/거버넌스 개념을 AWS에서 구현할 때 사용하는 서비스와 비교합니다.  
+> AWS Lab 참조: [AWS Lab 07 — 아키텍처/DevOps](../../aws/lab07-architecture-devops/README.md)
+
+### 서비스 대응 매핑
+
+| Azure 개념/서비스 | AWS 대응 서비스 | 차이점 |
+|-----------------|---------------|--------|
+| Azure AD (Entra ID) | AWS IAM Identity Center (SSO) + Amazon Cognito | Azure AD는 엔터프라이즈 IdP 통합이 더 광범위 |
+| RBAC (역할 기반 접근 제어) | AWS IAM (Policy + Role) | AWS는 Policy 기반, Azure는 Role Assignment 기반 |
+| Custom Role | AWS Custom IAM Policy | 개념 동일, 문법 차이 |
+| Managed Identity | IAM Role for EC2/Lambda (Instance Profile) | 코드 없이 서비스 인증, 개념 동일 |
+| Azure Policy | AWS Config Rules + Service Control Policy (SCP) | Azure Policy가 더 세밀한 리소스 제어 |
+| Management Group | AWS Organizations (OU 구조) | 계층형 정책 상속 개념 동일 |
+| Blueprint | AWS Control Tower | 표준화된 환경 자동 배포 |
+| Microsoft Defender for Cloud | AWS Security Hub + GuardDuty | 통합 보안 점수, 위협 탐지 |
+| Azure Key Vault | AWS Secrets Manager + KMS | 비밀/인증서/키 관리, 기능 유사 |
+| Azure AD Conditional Access | AWS IAM Condition Keys + Cognito MFA | 조건부 접근 정책 |
+| Azure AD B2C | Amazon Cognito User Pools | 외부 고객 인증 (B2C) |
+
+### 인증/인가 아키텍처 비교
+
+**Azure (Azure AD 기반)**
+```
+사용자 → Azure AD (Entra ID) → MSAL OAuth2 토큰 발급 → App Service/API
+                ↓
+         Conditional Access (IP/디바이스/MFA 조건)
+                ↓
+         RBAC (Subscription/RG/Resource 스코프별 권한)
+```
+
+**AWS (IAM 기반)**
+```
+사용자 → IAM Identity Center (SSO) / Cognito → JWT 토큰 발급 → API Gateway/ALB
+                ↓
+         SCPs (Organization 수준 가드레일)
+                ↓
+         IAM Policy (Service/Resource/Condition 기반 권한)
+```
+
+### RBAC vs IAM Policy 비교
+
+| 항목 | Azure RBAC | AWS IAM |
+|------|-----------|---------|
+| 권한 정의 방식 | Role (Actions 집합) → Scope에 Assignment | Policy (Effect/Action/Resource/Condition) |
+| 최소 권한 원칙 | Custom Role로 세밀하게 정의 | Inline/Managed Policy로 정의 |
+| 리소스 스코프 | Management Group → Subscription → RG → Resource | Organization → Account → Service → Resource |
+| 상속 구조 | 상위 스코프에서 하위로 상속 | SCPs → 계정 → IAM Policy |
+| 서비스 주체 | Service Principal / Managed Identity | IAM Role (Trust Policy) |
+
+### AWS IAM 예시 (읽기 전용 S3 Custom Policy)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-bucket",
+        "arn:aws:s3:::my-bucket/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestedRegion": "ap-northeast-2"
+        }
+      }
+    }
+  ]
+}
+```
+
+### 거버넌스 도구 비교
+
+| 거버넌스 항목 | Azure | AWS |
+|-------------|-------|-----|
+| 계정/구독 계층 관리 | Management Group | AWS Organizations |
+| 정책 자동 적용 | Azure Policy | AWS Config Rules + SCP |
+| 표준 환경 배포 | Azure Blueprint | AWS Control Tower |
+| 보안 점수 | Microsoft Defender for Cloud (Secure Score) | AWS Security Hub (Security Score) |
+| 규제 컴플라이언스 | Compliance Manager | AWS Artifact + Security Hub Standards |
+| 비용 거버넌스 | Azure Cost Management | AWS Cost Explorer + Budgets |
+
+### 병렬 학습 포인트
+
+1. **인증 흐름**: Azure AD + MSAL ↔ IAM Identity Center + Cognito — OAuth2/OIDC 토큰 기반 인증
+2. **역할/정책 설계**: RBAC Custom Role ↔ IAM Custom Policy — 최소 권한 원칙 적용 방법
+3. **서비스 인증**: Managed Identity ↔ IAM Role (Instance Profile) — 코드 없는 서비스 간 인증
+4. **계층형 거버넌스**: Management Group ↔ AWS Organizations — 정책 상속 구조 비교
+5. **컴플라이언스 자동화**: Azure Policy ↔ AWS Config Rules — 리소스 규정 준수 자동 검사

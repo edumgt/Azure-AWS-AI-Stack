@@ -439,3 +439,104 @@ value = r.get('session:userid:123')
 - [Azure Storage 소개](https://learn.microsoft.com/ko-kr/azure/storage/common/storage-introduction)
 - [Azure CLI Storage 명령어](https://learn.microsoft.com/ko-kr/cli/azure/storage)
 - [Azure Cache for Redis](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/)
+
+---
+
+## ☁️ AWS 대응 서비스 비교
+
+> 이 Lab의 Azure 스토리지/캐시 개념을 AWS에서 구현할 때 사용하는 서비스와 비교합니다.  
+> AWS Lab 참조: [AWS Lab 07 — 아키텍처/DevOps](../../aws/lab07-architecture-devops/README.md)
+
+### 서비스 대응 매핑
+
+| Azure 서비스 | AWS 대응 서비스 | 차이점 |
+|------------|---------------|--------|
+| Azure Blob Storage | Amazon S3 | 가장 직접적 대응. S3는 더 많은 스토리지 클래스 |
+| Azure Files | Amazon EFS (NFS) / FSx (SMB/NFS) | Files는 SMB/NFS 동시 지원 |
+| Azure Table Storage | Amazon DynamoDB (단순 KV) | DynamoDB가 기능/성능 더 풍부 |
+| Azure Queue Storage | Amazon SQS | 메시지 큐 동일 목적 |
+| Azure Data Lake Storage Gen2 | Amazon S3 + AWS Lake Formation | ADLS는 Blob 위에 계층 파일시스템 제공 |
+| Azure Cache for Redis | Amazon ElastiCache for Redis | 기능 동일, 설정 방식 차이 |
+| Azure CDN | Amazon CloudFront | 글로벌 엣지 캐시 개념 동일 |
+| Storage Account (계층) | S3 스토리지 클래스 | Hot→Warm→Cool→Archive ↔ Standard→IA→Glacier |
+
+### 스토리지 계층(Tier) 비교
+
+| 용도 | Azure Blob | Amazon S3 |
+|------|-----------|-----------|
+| 자주 접근하는 데이터 | Hot 티어 | S3 Standard |
+| 가끔 접근 (30일 이상) | Cool 티어 | S3 Standard-IA |
+| 드물게 접근 (90일 이상) | Cold 티어 | S3 Glacier Instant Retrieval |
+| 장기 보관 (180일 이상) | Archive 티어 | S3 Glacier Flexible / Deep Archive |
+
+### Redis 설정 비교
+
+**Azure Cache for Redis (Python)**
+```python
+import redis
+
+r = redis.StrictRedis(
+    host='myredis.redis.cache.windows.net',
+    port=6380,
+    password='<your-access-key>',
+    ssl=True
+)
+r.set('session:123', 'active', ex=3600)
+print(r.get('session:123'))
+```
+
+**AWS ElastiCache for Redis (Python)**
+```python
+import redis
+
+r = redis.StrictRedis(
+    host='my-cluster.xxxxxx.ng.0001.apn2.cache.amazonaws.com',
+    port=6379,
+    ssl=True,
+    ssl_cert_reqs=None
+)
+r.set('session:123', 'active', ex=3600)
+print(r.get('session:123'))
+```
+
+### S3 vs Blob Storage 주요 차이
+
+| 항목 | Amazon S3 | Azure Blob Storage |
+|------|----------|-------------------|
+| 버킷/컨테이너 네임스페이스 | 글로벌 고유 | 스토리지 계정 내 고유 |
+| 정적 웹 호스팅 | S3 Static Website | Static Website (Blob) |
+| 이벤트 트리거 | S3 Event Notifications | Event Grid |
+| 오브젝트 잠금 | S3 Object Lock (WORM) | Blob Immutable Storage |
+| 복제 | S3 Cross-Region Replication | Blob Geo-Redundancy (GRS/GZRS) |
+| 보안 URL | Pre-signed URL | SAS Token |
+| 수명 주기 | S3 Lifecycle Rules | Blob Lifecycle Management |
+
+### AWS CLI 예시 (S3 기본 작업)
+
+```bash
+# 버킷 생성
+aws s3api create-bucket \
+  --bucket my-data-bucket \
+  --region ap-northeast-2 \
+  --create-bucket-configuration LocationConstraint=ap-northeast-2
+
+# 파일 업로드
+aws s3 cp local-file.pdf s3://my-data-bucket/documents/
+
+# Pre-signed URL 생성 (1시간 유효)
+aws s3 presign s3://my-data-bucket/documents/local-file.pdf \
+  --expires-in 3600
+
+# Lifecycle 정책 설정 (30일 후 IA, 90일 후 Glacier)
+aws s3api put-bucket-lifecycle-configuration \
+  --bucket my-data-bucket \
+  --lifecycle-configuration file://lifecycle.json
+```
+
+### 병렬 학습 포인트
+
+1. **오브젝트 스토리지**: Blob Storage ↔ S3 — 업로드/다운로드/SAS URL/Pre-signed URL 패턴 비교
+2. **스토리지 계층**: Hot/Cool/Archive ↔ Standard/IA/Glacier — 비용 최적화 수명 주기 설계
+3. **인메모리 캐시**: Azure Redis ↔ ElastiCache Redis — 세션 캐싱, pub/sub, 클러스터 모드 비교
+4. **이벤트 트리거**: Event Grid ↔ S3 Event Notification — 파일 업로드 시 자동 처리 파이프라인
+5. **파일 공유**: Azure Files ↔ Amazon EFS/FSx — NFS/SMB 기반 공유 스토리지 마운트 비교

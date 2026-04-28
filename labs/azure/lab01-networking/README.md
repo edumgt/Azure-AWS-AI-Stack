@@ -164,3 +164,94 @@ Azure Virtual Network (10.0.0.0/16)
 - [Azure Private Endpoint](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview)
 - [Azure ExpressRoute](https://learn.microsoft.com/en-us/azure/expressroute/)
 - [Azure VPN Gateway](https://learn.microsoft.com/en-us/azure/vpn-gateway/)
+
+---
+
+## ☁️ AWS 대응 서비스 비교
+
+> 이 Lab의 Azure 네트워킹 개념을 AWS에서 구현할 때 사용하는 서비스와 비교합니다.  
+> AWS Lab 참조: [AWS Lab 07 — 아키텍처/DevOps](../../aws/lab07-architecture-devops/README.md)
+
+### 서비스 대응 매핑
+
+| Azure 개념/서비스 | AWS 대응 서비스 | 차이점 |
+|-----------------|---------------|--------|
+| VNet (Virtual Network) | VPC (Virtual Private Cloud) | 개념 동일, Azure VNet은 구독 스코프 |
+| Subnet | Subnet | 동일. AWS는 AZ별로 서브넷 생성 필수 |
+| NSG (Network Security Group) | Security Group (인스턴스 레벨) + NACL (서브넷 레벨) | AWS는 Stateful SG + Stateless NACL 이중 구조 |
+| Private Endpoint | VPC Endpoint (Interface Endpoint) | 동일 개념, AWS PrivateLink 기반 |
+| VPN Gateway | AWS VPN Gateway + Customer Gateway | 설정 방식 유사 |
+| NAT Gateway | NAT Gateway | 동일 개념 |
+| VNet Peering | VPC Peering | 동일 개념, AWS는 Transit Gateway로 허브-스포크 구성 |
+| ExpressRoute | AWS Direct Connect | 전용 회선 기반 하이브리드 연결, 동일 목적 |
+| Azure Front Door | AWS Global Accelerator + CloudFront | 글로벌 라우팅 + CDN 역할 |
+| Azure Firewall | AWS Network Firewall | 중앙 집중형 네트워크 방화벽 |
+
+### 네트워크 구성 비교
+
+**Azure 네트워크 구성**
+```
+Azure Virtual Network (10.0.0.0/16)
+├── Subnet: appSubnet (10.0.1.0/24) — NSG 적용
+│     └── App Service, VM
+└── Subnet: dataSubnet (10.0.2.0/24) — NSG 적용
+      └── Azure SQL, Redis + Private Endpoint
+```
+
+**AWS 네트워크 구성**
+```
+VPC (10.0.0.0/16)
+├── Public Subnet (10.0.1.0/24) [AZ-a] — Internet Gateway, NAT Gateway
+│     └── ALB, Bastion Host
+├── Private Subnet (10.0.2.0/24) [AZ-a] — Security Group
+│     └── EC2, Lambda, EKS Node
+└── Private Subnet (10.0.3.0/24) [AZ-b] — Security Group
+      └── RDS, ElastiCache + VPC Endpoint
+```
+
+### 핵심 차이점 상세
+
+| 항목 | Azure | AWS |
+|------|-------|-----|
+| 서브넷 AZ 분리 | VNet 내 자유롭게 배치 (AZ 무관) | 서브넷은 반드시 단일 AZ에 속함 |
+| 보안 그룹 적용 단위 | NSG → Subnet 또는 NIC | Security Group → 인스턴스/ENI |
+| 인터넷 게이트웨이 | 기본 제공 (별도 리소스 없음) | Internet Gateway를 VPC에 명시적 연결 필요 |
+| 프라이빗 서비스 접근 | Private Endpoint (DNS 자동 매핑) | VPC Endpoint Interface (Route 53 Resolver) |
+| 전용 회선 속도 | ExpressRoute: 최대 100Gbps | Direct Connect: 최대 100Gbps (동일) |
+| VNet/VPC 간 연결 | VNet Peering / Virtual WAN | VPC Peering / Transit Gateway |
+
+### AWS CLI 예시 (VPC + Subnet + Private 연결 구성)
+
+```bash
+# VPC 생성
+aws ec2 create-vpc --cidr-block 10.0.0.0/16 --tag-specifications \
+  'ResourceType=vpc,Tags=[{Key=Name,Value=my-vpc}]'
+
+# 퍼블릭 서브넷 생성
+aws ec2 create-subnet \
+  --vpc-id vpc-xxxx \
+  --cidr-block 10.0.1.0/24 \
+  --availability-zone ap-northeast-2a
+
+# 프라이빗 서브넷 생성
+aws ec2 create-subnet \
+  --vpc-id vpc-xxxx \
+  --cidr-block 10.0.2.0/24 \
+  --availability-zone ap-northeast-2a
+
+# VPC Endpoint (S3 Interface Endpoint) 생성
+aws ec2 create-vpc-endpoint \
+  --vpc-id vpc-xxxx \
+  --vpc-endpoint-type Interface \
+  --service-name com.amazonaws.ap-northeast-2.s3 \
+  --subnet-ids subnet-xxxx \
+  --security-group-ids sg-xxxx
+```
+
+### 병렬 학습 포인트
+
+1. **격리 단위**: VNet/Subnet ↔ VPC/Subnet — 리소스 네트워크 격리 설계 원칙 동일
+2. **보안 정책**: NSG ↔ Security Group + NACL — Stateful vs Stateless 차이 이해
+3. **프라이빗 접근**: Private Endpoint ↔ VPC Interface Endpoint — PaaS 서비스를 내부 IP로 접근
+4. **하이브리드 연결**: ExpressRoute ↔ Direct Connect — 전용 회선 설계 시 고려 요소 동일
+5. **멀티 VNet/VPC**: VNet Peering ↔ Transit Gateway — 대규모 네트워크 허브-스포크 구조 비교
