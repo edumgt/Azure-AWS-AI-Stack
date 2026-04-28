@@ -1,6 +1,6 @@
 # ☁️ Azure Solution Labs
 
-> Azure 클라우드 서비스 구성요소별 실습 가이드 — 네트워킹, 컴퓨팅, 보안, 스토리지, DevOps, 아키텍처, 개발
+> Azure 클라우드 서비스 구성요소별 실습 가이드 — 네트워킹, 컴퓨팅, 보안, 스토리지, DevOps, 아키텍처, 개발, AI Agent, ML/데이터 분석, 플랫폼 환경
 
 ---
 
@@ -15,6 +15,9 @@
 | [Lab 05](./lab05-infra-devops/README.md) | 인프라/DevOps | Key Vault, ARM/Bicep, Azure Arc, GitHub Actions, KQL | IaC, 하이브리드, CI/CD, 모니터링 쿼리 |
 | [Lab 06](./lab06-architecture-performance/README.md) | 아키텍처/성능 | Well-Architected Framework, Front Door, CDN | SA 체크리스트, 성능 최적화 |
 | [Lab 07](./lab07-app-development/README.md) | 앱 개발 | Flask, Django, Dapr, Application Insights | Python 웹 프레임워크, 분산 런타임, 모니터링 |
+| [Lab 08](./lab08-ai-agent/README.md) | AI Agent 개발 | Azure OpenAI, AI Search, Cosmos DB, Durable Functions | Orchestration, RAG, Text-2SQL, HITL, Policy |
+| [Lab 09](./lab09-ml-data-analysis/README.md) | ML / 데이터 분석 | Azure ML, Synapse, Data Factory, Databricks | Knowledge Graph, ETL, Fact-table, 심층 분석 |
+| [Lab 10](./lab10-azure-platform/README.md) | Azure 플랫폼 환경 | Microsoft Fabric, ADLS Gen2, Synapse, OpenAI | 통합 데이터·AI 플랫폼, Medallion Architecture |
 
 ---
 
@@ -28,5 +31,8 @@ Azure Cloud
 ├── 📦 스토리지: Blob, Files, Table, Queue, Redis Cache
 ├── ⚙️ DevOps: Azure DevOps, GitHub Actions, ARM/Bicep/Terraform
 ├── 📈 모니터링: Azure Monitor, Log Analytics, Application Insights
-└── 📋 거버넌스: Management Group, Subscription, Blueprint, Cost Management
+├── 📋 거버넌스: Management Group, Subscription, Blueprint, Cost Management
+├── 🤖 AI Agent: Azure OpenAI, AI Search, Semantic Kernel, Prompt Flow, Content Safety
+├── 📊 ML / 데이터: Azure ML, Databricks, Synapse Analytics, Data Factory, Purview
+└── 🏭 데이터 플랫폼: Microsoft Fabric, ADLS Gen2, OneLake, Power BI
 ```
