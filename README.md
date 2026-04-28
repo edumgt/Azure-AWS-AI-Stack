@@ -29,7 +29,10 @@
 │       ├── lab04-storage-cache/
 │       ├── lab05-infra-devops/
 │       ├── lab06-architecture-performance/
-│       └── lab07-app-development/
+│       ├── lab07-app-development/
+│       ├── lab08-ai-agent/            ← AI Agent 개발 (신규)
+│       ├── lab09-ml-data-analysis/    ← ML / 데이터 분석 (신규)
+│       └── lab10-azure-platform/      ← Azure 플랫폼 환경 (신규)
 ├── docs/
 │   ├── intro.md                       ← 전문가 이력/프로필
 │   └── assets/                        ← PDF 등 첨부 자료
@@ -69,6 +72,9 @@ Azure 클라우드 인프라 구성요소별 실습 가이드입니다.
 | [Lab 05](./labs/azure/lab05-infra-devops/README.md) | 인프라/DevOps | Key Vault, ARM/Bicep, Azure Arc, GitHub Actions |
 | [Lab 06](./labs/azure/lab06-architecture-performance/README.md) | 아키텍처/성능 | Well-Architected Framework, Front Door, CDN |
 | [Lab 07](./labs/azure/lab07-app-development/README.md) | 앱 개발 | Flask, Django, Dapr, Application Insights |
+| [Lab 08](./labs/azure/lab08-ai-agent/README.md) | **AI Agent 개발** | Azure OpenAI, AI Search, Durable Functions, Logic Apps |
+| [Lab 09](./labs/azure/lab09-ml-data-analysis/README.md) | **ML / 데이터 분석** | Azure ML, Synapse, Data Factory, Cosmos DB (Gremlin) |
+| [Lab 10](./labs/azure/lab10-azure-platform/README.md) | **Azure 플랫폼 환경** | Microsoft Fabric, ADLS Gen2, Synapse, Power BI |
 
 ---
 
