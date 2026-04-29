@@ -89,12 +89,6 @@ Azure 클라우드 인프라 구성요소별 실습 가이드입니다.
 | **다국어** | `README_en/ja/zh.md`를 `i18n/` 디렉토리로 이동 |
 | **지원 문서** | `Intro.md` → `docs/intro.md`, PDF → `docs/assets/` |
 
----
 
-## 👨‍💼 소개
 
-> [전문가 프로필 보기](./docs/intro.md)
 
----
-
-_Last Updated: 2025-05_
